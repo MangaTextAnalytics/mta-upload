@@ -1,10 +1,11 @@
 import argparse
 import logging
-from actions.parse import parse
+from actions.analyze import Analyzer
 
 def main(args: argparse.Namespace) -> None:
-    result = parse(args.filepath)
-    logging.info('Result: %s', result)
+    analyzer = Analyzer()
+    word_freq = analyzer.analyze(args.filepath)
+    print(word_freq)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
