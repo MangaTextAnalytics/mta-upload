@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 
 from actions.analyze import Analyzer
+from actions.upload import Metadata, upload
+from env import load_env
 
 def main(
     filepath: Annotated[Path, typer.Argument(help='Path to the manga file or folder', exists=True)],
@@ -15,8 +17,13 @@ def main(
 ) -> None:
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
 
+    metadata = Metadata(title, author, year, volume)
+
     analyzer = Analyzer()
-    #word_freq = analyzer.analyze(args.filepath)
+    word_freq = analyzer.analyze(filepath)
+
+    upload(metadata, word_freq)
 
 if __name__ == '__main__':
+    load_env()
     typer.run(main)

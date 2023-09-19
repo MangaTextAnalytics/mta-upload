@@ -1,7 +1,7 @@
-import os
 import logging
 
 from typing import Dict
+from pathlib import Path
 from manga_ocr import MangaOcr
 from janome.tokenfilter import TokenCountFilter
 from janome.analyzer import Analyzer as JanomeAnalyzer
@@ -11,7 +11,7 @@ class Analyzer:
         self.mocr = MangaOcr()
         self.janome_analyzer = JanomeAnalyzer(token_filters=[TokenCountFilter()])
 
-    def parse(self, filepath: str) -> str:
+    def parse(self, filepath: Path) -> str:
         logging.info('Parsing file=%s', filepath)
         return self.mocr(filepath)
 
@@ -21,18 +21,13 @@ class Analyzer:
             freq[k] = v
         return freq
 
-    def analyze(self, filepath: str) -> Dict[str, int]:
+    def analyze(self, filepath: Path) -> Dict[str, int]:
         freq = {}
-        if os.path.isdir(filepath):
-            if not filepath.endswith('/'):
-                filepath += '/'
-            for path in os.listdir(filepath):
-                for k, v in self.analyze(filepath + path).items():
+        if filepath.is_dir():
+            for path in filepath.iterdir():
+                for k, v in self.analyze(path).items():
                     freq[k] = freq.get(k, 0) + v
         else: 
             text = self.parse(filepath)
             freq = self.count_freq(text)
         return freq
-
-        
-
