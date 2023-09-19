@@ -1,21 +1,22 @@
-import argparse
+from typing import Annotated
+import typer
 import logging
+from pathlib import Path
+
 from actions.analyze import Analyzer
 
-def main(args: argparse.Namespace) -> None:
+def main(
+    filepath: Annotated[Path, typer.Argument(help='Path to the manga file or folder', exists=True)],
+    verbose: bool = typer.Option(False, '--verbose', '-v', help='Verbose mode'),
+    title: str = typer.Option(None, '--title', '-t', help='Title of the manga', prompt=True),
+    author: str = typer.Option(None, '--author', '-a', help='Author of the manga', prompt=True),
+    year: int = typer.Option(None, '--year', '-y', help='Year of the manga', prompt=True),
+    volume: int = typer.Option(None, '--volume', '-v', help='Volume of the manga', prompt=True),
+) -> None:
+    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+
     analyzer = Analyzer()
-    word_freq = analyzer.analyze(args.filepath)
-    print(word_freq)
+    #word_freq = analyzer.analyze(args.filepath)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('filepath', help='path to the file or directory to be processed')
-    parser.add_argument('-v', '--verbose', action='store_true', help='increase output verbosity')
-    args = parser.parse_args()
-
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-
-    main(args)
+    typer.run(main)
