@@ -1,8 +1,10 @@
 import argparse
 import logging
+from actions.parse import parse
 
 def main(args: argparse.Namespace) -> None:
-    logging.info('Parsing file=%s', args.filepath)
+    result = parse(args.filepath)
+    logging.info('Result: %s', result)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
