@@ -6,13 +6,15 @@ from manga_ocr import MangaOcr
 from janome.tokenfilter import TokenCountFilter
 from janome.analyzer import Analyzer as JanomeAnalyzer
 
+logger = logging.getLogger(__name__)
+
 class Analyzer:
     def __init__(self):
         self.mocr = MangaOcr()
         self.janome_analyzer = JanomeAnalyzer(token_filters=[TokenCountFilter()])
 
     def parse(self, filepath: Path) -> str:
-        logging.info('Parsing file=%s', filepath)
+        logger.info('Parsing file=%s', filepath)
         return self.mocr(filepath)
 
     def count_freq(self, text: str) -> Dict[str, int]:

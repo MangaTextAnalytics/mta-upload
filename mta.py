@@ -1,11 +1,13 @@
-from typing import Annotated
 import typer
 import logging
-from pathlib import Path
 
+from pathlib import Path
+from typing import Annotated
+from actions.env import load_env
 from actions.analyze import Analyzer
-from actions.upload import Metadata, upload
-from env import load_env
+from actions.upload import Manga, upload
+
+logger = logging.getLogger(__name__)
 
 def main(
     filepath: Annotated[Path, typer.Argument(help='Path to the manga file or folder', exists=True)],
@@ -15,9 +17,11 @@ def main(
     year: int = typer.Option(None, '--year', '-y', help='Year of the manga', prompt=True),
     volume: int = typer.Option(None, '--volume', '-v', help='Volume of the manga', prompt=True),
 ) -> None:
-    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+    logger.level = logging.DEBUG if verbose else logging.INFO
+    logger.debug("verbose=%s", verbose)
+    load_env()
 
-    metadata = Metadata(title, author, year, volume)
+    metadata = Manga(title, author, year, volume)
 
     analyzer = Analyzer()
     word_freq = analyzer.analyze(filepath)
@@ -25,5 +29,4 @@ def main(
     upload(metadata, word_freq)
 
 if __name__ == '__main__':
-    load_env()
     typer.run(main)
