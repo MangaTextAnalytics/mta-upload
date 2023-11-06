@@ -3,7 +3,6 @@ import logging
 
 from pathlib import Path
 from typing import Annotated
-from actions.env import load_env
 from actions.analyze import Analyzer
 from actions.upload import Manga, upload
 
@@ -19,13 +18,25 @@ def main(
 ) -> None:
     logger.level = logging.DEBUG if verbose else logging.INFO
     logger.debug("verbose=%s", verbose)
-    load_env()
 
     metadata = Manga(title, author, year, volume)
 
     analyzer = Analyzer()
     word_freq = analyzer.analyze(filepath)
 
+    # print word_freq and metadata before prompting for confirmation
+    typer.echo(f'{filepath} results...')
+    for k, v in word_freq.items():
+        typer.echo(f'{k}: {v}')
+
+    typer.echo(f'title={metadata.title} author={metadata.author} year={metadata.year} volume={metadata.volume}')
+
+    # prompt for confirmation
+    if not typer.confirm('Upload to database?'):
+        raise typer.Abort()
+
+
+    typer.echo('Uploading to database...')
     upload(metadata, word_freq)
 
 if __name__ == '__main__':

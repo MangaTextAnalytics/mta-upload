@@ -3,15 +3,17 @@ import logging
 from typing import Dict
 from pathlib import Path
 from manga_ocr import MangaOcr
-from janome.tokenfilter import TokenCountFilter
+from janome.tokenfilter import TokenCountFilter, WordStopFilter
 from janome.analyzer import Analyzer as JanomeAnalyzer
 
 logger = logging.getLogger(__name__)
 
+stop_words = ['．', '、', '。', '「', '」', '『','』', '！', '？', 'ー', '〜']
+
 class Analyzer:
     def __init__(self):
         self.mocr = MangaOcr()
-        self.janome_analyzer = JanomeAnalyzer(token_filters=[TokenCountFilter()])
+        self.janome_analyzer = JanomeAnalyzer(token_filters=[WordStopFilter(stop_words), TokenCountFilter()])
 
     def parse(self, filepath: Path) -> str:
         logger.info('Parsing file=%s', filepath)
