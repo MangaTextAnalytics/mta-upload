@@ -149,7 +149,7 @@ def update_stats(stats_id: int, freqs: List[Dict[str, Any]]):
         if freq['count'] == 1:
             wordsUsedOnce += 1
 
-    wordsUsedOncePct = 100 * wordsUsedOnce / totalWords
+    wordsUsedOncePct = 100 * wordsUsedOnce / uniqueWords
 
     supabase.from_('Stats').update({
         'uniqueWords': uniqueWords,
